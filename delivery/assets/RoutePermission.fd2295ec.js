@@ -1,0 +1,1 @@
+import{f as a}from"./index.9022de34.js";import{u as c}from"./AccessStore.4066b28f.js";var p=a(({router:o,store:i})=>{const r=c();o.beforeEach((s,m,e)=>{s.meta.checkPermission?r.hasAccess(s.meta.permissionName)?e():e({path:"/access-denied"}):e()})});export{p as default};

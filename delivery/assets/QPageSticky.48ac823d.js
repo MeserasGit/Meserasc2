@@ -1,0 +1,1 @@
+import{s as a}from"./index.9022de34.js";import{u as o,a as r}from"./use-page-sticky.e99d68f4.js";var i=a({name:"QPageSticky",props:o,setup(s,{slots:t}){const{getStickyContent:e}=r();return()=>e(t)}});export{i as Q};
