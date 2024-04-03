@@ -190,11 +190,12 @@ EOD;
 		protected function getValue($key)
 	{
 		$time = time();
-		$sql = "SELECT value FROM {$this->cacheTableName} WHERE id='$key' AND (expire=0 OR expire>$time)";
+		
 	
 		try {
+			$sql = "SELECT value FROM {$this->cacheTableName} WHERE id='$key' AND (expire=0 OR expire>$time)";
 			$db = $this->getDbConnection();
-	
+	echo "Usando base de datos: " . get_class($db) . PHP_EOL;
 			if ($db->queryCachingDuration > 0) {
 				$duration = $db->queryCachingDuration;
 				$db->queryCachingDuration = 0;
@@ -208,9 +209,9 @@ EOD;
 		
 			Yii::log('Error al obtener el valor de la caché: ' . $e->getMessage(), CLogger::LEVEL_ERROR);
 	
-		
+		$sql = "SELECT value FROM {$this->cacheTableName} WHERE id='$key' AND (expire=0 OR expire>$time)";
 			$db = $this->getDbCacheConnection();
-	
+	echo "Usando base de datos: " . get_class($db) . PHP_EOL;
 		
 			if ($db->queryCachingDuration > 0) {
 				$duration = $db->queryCachingDuration;
@@ -222,6 +223,7 @@ EOD;
 				return $db->createCommand($sql)->queryScalar();
 			}
 		}
+		
 	}
 	
 
