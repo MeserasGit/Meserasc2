@@ -146,11 +146,12 @@ EOD;
 	 * @throws CException if {@link connectionID} does not point to a valid application component.
 	 */
 	public function getDbConnection()
-	{
+	{  
+		echo "hola";
 		if($this->_db!==null)
 			return $this->_db;
 		elseif(($id=$this->connectionID)!==null)
-		{
+		{echo "hola2";
 			if(($this->_db=Yii::app()->getComponent($id)) instanceof CDbConnection)
 				return $this->_db;
 			else
@@ -158,7 +159,7 @@ EOD;
 					array('{id}'=>$id)));
 		}
 		else
-		{
+		{echo "hola4";
 			$dbFile=Yii::app()->getRuntimePath().DIRECTORY_SEPARATOR.'cache-'.Yii::getVersion().'.db';
 			return $this->_db=new CDbConnection('sqlite:'.$dbFile);
 		}
