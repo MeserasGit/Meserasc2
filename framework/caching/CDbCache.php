@@ -122,7 +122,6 @@ class CDbCache extends CCache
 	 */
 	protected function createCacheTable($db,$tableName)
 	{
-		init();
 		$driver=$db->getDriverName();
 		if($driver==='mysql')
 			$blob='LONGBLOB';
@@ -146,8 +145,7 @@ EOD;
 	 * @throws CException if {@link connectionID} does not point to a valid application component.
 	 */
 	public function getDbConnection()
-	{  
-		
+	{
 		if($this->_db!==null)
 			return $this->_db;
 		elseif(($id=$this->connectionID)!==null)
@@ -160,12 +158,35 @@ EOD;
 		}
 		else
 		{
-			$dbFile=Yii::app()->getRuntimePath().DIRECTORY_SEPARATOR.'cache-'.Yii::getVersion().'.db';
-			    $dbName = 'sqlite:' . $dbFile;
-
-    // Imprimir el nombre de la base de datos
-    echo "La base de datos que se está utilizando es: $dbName";
-			return $this->_db=new CDbConnection('sqlite:'.$dbFile);
+			$dbFile = Yii::app()->getRuntimePath() . DIRECTORY_SEPARATOR . 'cache-' . Yii::getVersion() . '.db';
+			$dbName = 'sqlite:' . $dbFile;
+		
+			// Crear la conexión a la base de datos SQLite
+			$db = new CDbConnection($dbName);
+			$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		
+			// Verificar si la tabla YiiCache existe en la base de datos
+			$tableExists = false;
+			try {
+				$command = $db->createCommand("SELECT 1 FROM YiiCache LIMIT 1");
+				$command->queryScalar();
+				$tableExists = true;
+			} catch (Exception $e) {
+				// La tabla no existe
+				$tableExists = false;
+			}
+		
+			// Si la tabla no existe, la creamos
+			if (!$tableExists) {
+				$sql = "CREATE TABLE IF NOT EXISTS YiiCache (
+					id CHAR(128) PRIMARY KEY,
+	expire INTEGER,
+	value LONGBLOB
+				)";
+				$db->createCommand($sql)->execute();
+				echo "La tabla YiiCache ha sido creada en la base de datos.";
+			}
+			return $db;
 		}
 	}
 
@@ -178,62 +199,29 @@ EOD;
 	{
 		$this->_db=$value;
 	}
-        public function getDbCacheConnection()
-	{
-		
-			$dbFile=Yii::app()->getRuntimePath().DIRECTORY_SEPARATOR.'cache-'.Yii::getVersion().'.db';
-		    $dbName = 'sqlite:' . $dbFile;
 
-    // Imprimir el nombre de la base de datos
-    echo "La base de datos que se está utilizando es: $dbName";
-			return $this->_db=new CDbConnection('sqlite:'.$dbFile);
-		
-	}
 	/**
 	 * Retrieves a value from cache with a specified key.
 	 * This is the implementation of the method declared in the parent class.
 	 * @param string $key a unique key identifying the cached value
 	 * @return string|boolean the value stored in cache, false if the value is not in the cache or expired.
 	 */
-		protected function getValue($key)
+	protected function getValue($key)
 	{
-		$time = time();
-		
-	
-		try {
-			$sql = "SELECT value FROM {$this->cacheTableName} WHERE id='$key' AND (expire=0 OR expire>$time)";
-			$db = $this->getDbConnection();
-	echo "Usando base de datos: " . get_class($db) . PHP_EOL;
-			if ($db->queryCachingDuration > 0) {
-				$duration = $db->queryCachingDuration;
-				$db->queryCachingDuration = 0;
-				$result = $db->createCommand($sql)->queryScalar();
-				$db->queryCachingDuration = $duration;
-				return $result;
-			} else {
-				return $db->createCommand($sql)->queryScalar();
-			}
-		} catch (Exception $e) {
-		
-			Yii::log('Error al obtener el valor de la caché: ' . $e->getMessage(), CLogger::LEVEL_ERROR);
-	
-		$sql = "SELECT value FROM {$this->cacheTableName} WHERE id='$key' AND (expire=0 OR expire>$time)";
-			$db = $this->getDbCacheConnection();
-	echo "Usando base de datos: " . get_class($db) . PHP_EOL;
-		
-			if ($db->queryCachingDuration > 0) {
-				$duration = $db->queryCachingDuration;
-				$db->queryCachingDuration = 0;
-				$result = $db->createCommand($sql)->queryScalar();
-				$db->queryCachingDuration = $duration;
-				return $result;
-			} else {
-				return $db->createCommand($sql)->queryScalar();
-			}
+		$time=time();
+		$sql="SELECT value FROM {$this->cacheTableName} WHERE id='$key' AND (expire=0 OR expire>$time)";
+		$db=$this->getDbConnection();
+		if($db->queryCachingDuration>0)
+		{
+			$duration=$db->queryCachingDuration;
+			$db->queryCachingDuration=0;
+			$result=$db->createCommand($sql)->queryScalar();
+			$db->queryCachingDuration=$duration;
+			return $result;
 		}
-		
+		else
+			return $db->createCommand($sql)->queryScalar();
 	}
-	
 
 	/**
 	 * Retrieves multiple values from cache with the specified keys.
