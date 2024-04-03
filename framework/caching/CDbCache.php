@@ -130,7 +130,7 @@ class CDbCache extends CCache
 		else
 			$blob='BLOB';
 		$sql=<<<EOD
-CREATE TABLE $tableName
+CREATE TABLE YiiCache
 (
 	id CHAR(128) PRIMARY KEY,
 	expire INTEGER,
