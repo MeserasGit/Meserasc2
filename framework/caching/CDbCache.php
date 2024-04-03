@@ -122,6 +122,7 @@ class CDbCache extends CCache
 	 */
 	protected function createCacheTable($db,$tableName)
 	{
+		init();
 		$driver=$db->getDriverName();
 		if($driver==='mysql')
 			$blob='LONGBLOB';
@@ -130,7 +131,7 @@ class CDbCache extends CCache
 		else
 			$blob='BLOB';
 		$sql=<<<EOD
-CREATE TABLE YiiCache
+CREATE TABLE $tableName
 (
 	id CHAR(128) PRIMARY KEY,
 	expire INTEGER,
