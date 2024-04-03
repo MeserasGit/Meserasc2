@@ -174,30 +174,56 @@ EOD;
 	{
 		$this->_db=$value;
 	}
-
+        public function getDbCacheConnection()
+	{
+		
+			$dbFile=Yii::app()->getRuntimePath().DIRECTORY_SEPARATOR.'cache-'.Yii::getVersion().'.db';
+			return $this->_db=new CDbConnection('sqlite:'.$dbFile);
+		
+	}
 	/**
 	 * Retrieves a value from cache with a specified key.
 	 * This is the implementation of the method declared in the parent class.
 	 * @param string $key a unique key identifying the cached value
 	 * @return string|boolean the value stored in cache, false if the value is not in the cache or expired.
 	 */
-	protected function getValue($key)
+		protected function getValue($key)
 	{
-		$time=time();
-		$sql="SELECT value FROM {$this->cacheTableName} WHERE id='$key' AND (expire=0 OR expire>$time)";
-		$db=$this->getDbConnection();
-		echo "Usando base de datos: " . get_class($db) . PHP_EOL;
-		if($db->queryCachingDuration>0)
-		{
-			$duration=$db->queryCachingDuration;
-			$db->queryCachingDuration=0;
-			$result=$db->createCommand($sql)->queryScalar();
-			$db->queryCachingDuration=$duration;
-			return $result;
+		$time = time();
+		$sql = "SELECT value FROM {$this->cacheTableName} WHERE id='$key' AND (expire=0 OR expire>$time)";
+	
+		try {
+			$db = $this->getDbConnection();
+	
+			if ($db->queryCachingDuration > 0) {
+				$duration = $db->queryCachingDuration;
+				$db->queryCachingDuration = 0;
+				$result = $db->createCommand($sql)->queryScalar();
+				$db->queryCachingDuration = $duration;
+				return $result;
+			} else {
+				return $db->createCommand($sql)->queryScalar();
+			}
+		} catch (Exception $e) {
+		
+			Yii::log('Error al obtener el valor de la caché: ' . $e->getMessage(), CLogger::LEVEL_ERROR);
+	
+		
+			$db = $this->getDbCacheConnection();
+	
+		
+			if ($db->queryCachingDuration > 0) {
+				$duration = $db->queryCachingDuration;
+				$db->queryCachingDuration = 0;
+				$result = $db->createCommand($sql)->queryScalar();
+				$db->queryCachingDuration = $duration;
+				return $result;
+			} else {
+				return $db->createCommand($sql)->queryScalar();
+			}
 		}
-		else
-			return $db->createCommand($sql)->queryScalar();
 	}
+	
 
 	/**
 	 * Retrieves multiple values from cache with the specified keys.
