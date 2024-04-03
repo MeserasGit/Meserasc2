@@ -184,7 +184,7 @@ EOD;
 	value LONGBLOB
 				)";
 				$db->createCommand($sql)->execute();
-				echo "La tabla YiiCache ha sido creada en la base de datos.";
+				
 			}
 			return $db;
 		}
