@@ -147,11 +147,11 @@ EOD;
 	 */
 	public function getDbConnection()
 	{  
-		echo "hola";
+		
 		if($this->_db!==null)
 			return $this->_db;
 		elseif(($id=$this->connectionID)!==null)
-		{echo "hola2";
+		{
 			if(($this->_db=Yii::app()->getComponent($id)) instanceof CDbConnection)
 				return $this->_db;
 			else
@@ -159,7 +159,7 @@ EOD;
 					array('{id}'=>$id)));
 		}
 		else
-		{echo "hola4";
+		{
 			$dbFile=Yii::app()->getRuntimePath().DIRECTORY_SEPARATOR.'cache-'.Yii::getVersion().'.db';
 			return $this->_db=new CDbConnection('sqlite:'.$dbFile);
 		}
@@ -186,6 +186,7 @@ EOD;
 		$time=time();
 		$sql="SELECT value FROM {$this->cacheTableName} WHERE id='$key' AND (expire=0 OR expire>$time)";
 		$db=$this->getDbConnection();
+		echo "Usando base de datos: " . get_class($db) . PHP_EOL;
 		if($db->queryCachingDuration>0)
 		{
 			$duration=$db->queryCachingDuration;
