@@ -161,6 +161,10 @@ EOD;
 		else
 		{
 			$dbFile=Yii::app()->getRuntimePath().DIRECTORY_SEPARATOR.'cache-'.Yii::getVersion().'.db';
+			    $dbName = 'sqlite:' . $dbFile;
+
+    // Imprimir el nombre de la base de datos
+    echo "La base de datos que se está utilizando es: $dbName";
 			return $this->_db=new CDbConnection('sqlite:'.$dbFile);
 		}
 	}
@@ -178,6 +182,10 @@ EOD;
 	{
 		
 			$dbFile=Yii::app()->getRuntimePath().DIRECTORY_SEPARATOR.'cache-'.Yii::getVersion().'.db';
+		    $dbName = 'sqlite:' . $dbFile;
+
+    // Imprimir el nombre de la base de datos
+    echo "La base de datos que se está utilizando es: $dbName";
 			return $this->_db=new CDbConnection('sqlite:'.$dbFile);
 		
 	}
