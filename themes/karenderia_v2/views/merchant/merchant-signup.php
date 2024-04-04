@@ -202,7 +202,7 @@
    <div class="w-100 text-center">
      <h5 class="mb-4"><?php echo t("Overtake competitors")?></h5>
      <h1 class="mb-4"><?php echo t("Become a Multi Restaurant partner today.")?></h1>     
-     <div class="btn-white-parent non-trasparent"><a href="#" class="btn btn-link w25"><?php echo t("Join")?></a></div>
+     <div class="btn-white-parent non-trasparent"><a href="https://wa.me/18189498345" class="btn btn-link w25"><?php echo t("Join")?></a></div>
    </div>
    <div class="mt-auto border"></div>
  </div>
