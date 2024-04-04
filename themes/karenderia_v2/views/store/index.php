@@ -7,7 +7,7 @@
 
   <div class="container-fluid d-flex justify-content-center" id="main-search-banner">
       <div class="banner-center align-self-center">
-         <h2 class="text-center mb-3"><?php echo t("Let's find best food for you")?></h2>
+  <h2 class="text-center mb-3"><?php echo t("Let's find best tacos for you")?></h2>
           <div class="home-search-wrap" >     
             
            <component-auto-complete
