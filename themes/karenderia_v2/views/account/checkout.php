@@ -529,7 +529,7 @@
 			</template>		   
 			<template #default>
 
-			<template v-if="hasSavedPayment">
+			
              <h5 class="mb-3"><?php echo t("Saved Payment Methods")?></h5> 
                           
              <div v-for="saved_payment in data_saved_payment" class="row no-gutters align-items-center chevron-section medium rounded mb-2"  :class="{ selected: saved_payment.as_default==1 }" >
@@ -557,10 +557,10 @@
               </div> <!--col-->
               <div class="col-lg-4 col-md-4 col-2  d-flex align-items-center justify-content-end">
                          
-                 <template v-if="saved_payment.as_default==1">
+               
                  <div class="mr-1 d-none d-md-block"><i class="zmdi zmdi-check text-success"></i></div>
                  <div class="mr-3 d-none d-md-block"><p class="m-0"><?php echo t("Default")?></p></div>
-                 </template>
+          
                  
 	             <div class="dropdown">
 	             <a href="javascript:;" class="rounded-pill rounded-button-icon d-inline-block" 
