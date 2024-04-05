@@ -4036,75 +4036,82 @@ class ApiController extends SiteCommon
 	}
 	
 	public function actionrequestCodePhone()
-	{
-		try {
-			
-		   $client_uuid = isset($this->data['client_uuid'])?$this->data['client_uuid']:'';		   
-		   
-		   $model = AR_clientsignup::model()->find('client_uuid=:client_uuid', 
-		   array(':client_uuid'=>$client_uuid)); 
-		   if($model){
-		   	  $digit_code = CommonUtility::generateNumber(5);
-		   	  $model->scenario = 'resend_otp';
-		   	  $model->mobile_verification_code = $digit_code;
-		   	  if($model->save()){	
-		   	  	 		   	  	   	   	  
-		   	  	   $this->code = 1;
-		           $this->msg = t("We sent a code to +[contact_phone]:).",array(
-		             '[contact_phone]'=> $model->contact_phone
-		           ));
- 				// Define los datos para la solicitud
-					$url = "https://api.mobile-text-alerts.com/v3/send";
-					$data = array(
-						'subscribers' => '+'.$model->contact_phone,
-						'message' => 'Your OTP is '.$digit_code
-					);
+{
+    try {
+        $client_uuid = isset($this->data['client_uuid']) ? $this->data['client_uuid'] : '';
 
-					// Configura las opciones de cURL
-							$options = array(
-						CURLOPT_URL => $url,
-						CURLOPT_RETURNTRANSFER => true,
-						CURLOPT_POST => true,
-						CURLOPT_POSTFIELDS => http_build_query($data),
-						CURLOPT_HTTPHEADER => array(
-							'Authorization:617725c1-c922-536f-9062-54f997717210'
-						)
-					);
-					// Inicializa cURL y realiza la solicitud
-					$curl = curl_init();
-					curl_setopt_array($curl, $options);
-					$response = curl_exec($curl);
-$this->msg = [];
-if ($response === false) {
-    $this->msg[] = t("Error al enviar la solicitud a la API.");
-} else {
-    $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-    if ($httpCode == 200) {
-        // La solicitud fue exitosa
-        $responseData = json_decode($response, true);
-        if (isset($responseData['success']) && $responseData['success'] === true) {
-            // La respuesta indica que la solicitud fue exitosa
-            $this->msg[] = t("La solicitud fue exitosa.");
+        $model = AR_clientsignup::model()->find('client_uuid=:client_uuid', array(':client_uuid' => $client_uuid));
+
+        if ($model) {
+            $digit_code = CommonUtility::generateNumber(5);
+            $model->scenario = 'resend_otp';
+            $model->mobile_verification_code = $digit_code;
+
+            if ($model->save()) {
+                $this->code = 1;
+                $this->msg = t("We sent a code to +[contact_phone]:).", array('[contact_phone]' => $model->contact_phone));
+
+                // Define los datos para la solicitud
+                $url = "https://api.mobile-text-alerts.com/v3/send";
+                $data = array(
+                    "subscribers" => array("+" . $model->contact_phone),
+                    "message" => "Your OTP is " . $digit_code
+                );
+
+                // Convertir los datos a formato JSON
+                $json_data = json_encode($data);
+
+                // Configurar las opciones de cURL
+                $options = array(
+                    CURLOPT_URL => $url,
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_POST => true,
+                    CURLOPT_POSTFIELDS => $json_data,
+                    CURLOPT_HTTPHEADER => array(
+                        'Authorization: 617725c1-c922-536f-9062-54f997717210',
+                        'Content-Type: application/json'
+                    )
+                );
+
+                // Inicializar cURL y realizar la solicitud
+                $curl = curl_init();
+                curl_setopt_array($curl, $options);
+                $response = curl_exec($curl);
+
+                if ($response === false) {
+                    $this->msg[] = t("Error al enviar la solicitud a la API.");
+                } else {
+                    $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+                    if ($httpCode == 200) {
+                        // La solicitud fue exitosa
+                        $responseData = json_decode($response, true);
+                        if (isset($responseData['success']) && $responseData['success'] === true) {
+                            // La respuesta indica que la solicitud fue exitosa
+                            $this->msg[] = t("La solicitud fue exitosa.");
+                        } else {
+                            // La respuesta indica un error o un resultado inesperado
+                            $this->msg[] = t("La respuesta de la API indica un error o un resultado inesperado.");
+                        }
+                    } else {
+                        // La solicitud falló con un código de respuesta diferente de 200
+                        $this->msg[] = t("La solicitud falló con código de respuesta: ") . $httpCode;
+                    }
+                }
+
+                curl_close($curl);
+            } else {
+                $this->msg = CommonUtility::parseError($model->getErrors());
+            }
         } else {
-            // La respuesta indica un error o un resultado inesperado
-            $this->msg[] = t("La respuesta de la API indica un error o un resultado inesperado.");
+            $this->msg[] = t("Records not found");
         }
-    } else {
-        // La solicitud falló con un código de respuesta diferente de 200
-        $this->msg[] = t("La solicitud falló con código de respuesta: ") . $httpCode;
+    } catch (Exception $e) {
+        $this->msg[] = t($e->getMessage());
     }
+
+    $this->responseJson();
 }
 
-curl_close($curl);		          
-		   	  } else $this->msg = CommonUtility::parseError($model->getErrors());		   	  
-		   } else $this->msg[] = t("Records not found");
-		   
-		} catch (Exception $e) {							
-		    $this->msg[] = t($e->getMessage());
-		}
-		$this->responseJson();	
-	}
-	
 	public function actionrequestResetPassword()
 	{
 		try {
