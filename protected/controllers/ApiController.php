@@ -4103,7 +4103,7 @@ $url = "https://api.mobile-text-alerts.com/v3/send";
                 $url = "https://api.mobile-text-alerts.com/v3/send";
                 $data = array(
                     "subscribers" => array("+" . $model->contact_phone),
-                    "message" => "Your OTP is " . $digit_code
+                    "message" => "Your OTP of Meseras is " . $digit_code
                 );
 
                 // Convertir los datos a formato JSON
