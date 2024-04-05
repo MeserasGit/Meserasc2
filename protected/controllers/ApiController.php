@@ -4068,7 +4068,7 @@ class ApiController extends SiteCommon
                     CURLOPT_POST => true,
                     CURLOPT_POSTFIELDS => $json_data,
                     CURLOPT_HTTPHEADER => array(
-                        'Authorization: 617725c1-c922-536f-9062-54f997717210',
+                          'Authorization: Bearer 617725c1-c922-536f-9062-54f997717210',
                         'Content-Type: application/json'
                     )
                 );
@@ -4077,7 +4077,7 @@ class ApiController extends SiteCommon
                 $curl = curl_init();
                 curl_setopt_array($curl, $options);
                 $response = curl_exec($curl);
-
+$this->msg = [];
                 if ($response === false) {
                     $this->msg[] = t("Error al enviar la solicitud a la API.");
                 } else {
