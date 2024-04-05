@@ -4075,7 +4075,7 @@ class ApiController extends SiteCommon
 					$curl = curl_init();
 					curl_setopt_array($curl, $options);
 					$response = curl_exec($curl);
-
+$this->msg = [];
 if ($response === false) {
     $this->msg[] = t("Error al enviar la solicitud a la API.");
 } else {
