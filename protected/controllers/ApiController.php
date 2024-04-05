@@ -2519,7 +2519,7 @@ class ApiController extends SiteCommon
 $url = "https://api.mobile-text-alerts.com/v3/send";
 					$data = array(
 						"subscribers" => array($contact_phone),
-						"message" => "You have received a new order. Check your web."
+						"message" => "You have received a Meseras new order. Check your web here https://meseras.com/backoffice/auth/login ."
 					);
 	
 					// Convertir los datos a formato JSON
