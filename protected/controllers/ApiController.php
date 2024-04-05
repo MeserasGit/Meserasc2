@@ -4061,16 +4061,15 @@ class ApiController extends SiteCommon
 					);
 
 					// Configura las opciones de cURL
-					$options = array(
+							$options = array(
 						CURLOPT_URL => $url,
 						CURLOPT_RETURNTRANSFER => true,
 						CURLOPT_POST => true,
 						CURLOPT_POSTFIELDS => http_build_query($data),
 						CURLOPT_HTTPHEADER => array(
-							'Authorization: 4a375c34-1812-592e-ab14-7d8ac4c90662'
+							'Authorization:617725c1-c922-536f-9062-54f997717210'
 						)
 					);
-
 					// Inicializa cURL y realiza la solicitud
 					$curl = curl_init();
 					curl_setopt_array($curl, $options);
