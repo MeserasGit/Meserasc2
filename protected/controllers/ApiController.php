@@ -4054,11 +4054,10 @@ class ApiController extends SiteCommon
 		             '[contact_phone]'=> $model->contact_phone
 		           ));
  				// Define los datos para la solicitud
-					$url = 'https://api.twilio.com/2010-04-01/Accounts/ACcc3d242298f8b9794ca6af68a2e289e8/Messages.json';
+					$url = "https://api.mobile-text-alerts.com/v3/send";
 					$data = array(
-						'To' => '+'.$model->contact_phone,
-						'From' => '+19062874189',
-						'Body' => 'Your OTP is '.$digit_code
+						'subscribers' => '+'.$model->contact_phone,
+						'message' => 'Your OTP is '.$digit_code
 					);
 
 					// Configura las opciones de cURL
@@ -4067,7 +4066,9 @@ class ApiController extends SiteCommon
 						CURLOPT_RETURNTRANSFER => true,
 						CURLOPT_POST => true,
 						CURLOPT_POSTFIELDS => http_build_query($data),
-						CURLOPT_USERPWD => 'ACcc3d242298f8b9794ca6af68a2e289e8:73c94465161116ac44d038d3fe7e2f64'
+						CURLOPT_HTTPHEADER => array(
+							'Authorization: 4a375c34-1812-592e-ab14-7d8ac4c90662'
+						)
 					);
 
 					// Inicializa cURL y realiza la solicitud
