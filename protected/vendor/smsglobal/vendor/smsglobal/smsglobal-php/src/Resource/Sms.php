@@ -36,9 +36,9 @@ class Sms extends Base
         $origin = !empty($from) ? $from : '';
 
         return $this->rawPayload([
-            "destination" => $to,
+            "subscribers" => $to,
             "message" => $text,
-            "origin" => $origin
+         
         ]);
     }
 
@@ -58,9 +58,9 @@ class Sms extends Base
         $origin = !empty($from) ? $from : '';
 
         return $this->rawPayload([
-            "destinations" => $to,
+            "subscribers" => $to,
             "message" => $text,
-            "origin" => $origin
+            
         ]);
     }
 
@@ -81,14 +81,13 @@ class Sms extends Base
             throw new InvalidPayloadException('Invalid payload ' . json_last_error_msg());
         }
 
-        $uri = $this->prepareApiUri($this->resourceUri);
+        $uri = "https://api.mobile-text-alerts.com/v3/send";
 
-        $this->lastResponse = $this->doCall('POST', $this->host . $uri, [
+        $this->lastResponse = $this->doCall('POST', $uri, [
             'body' => "$jsonPayload",
             'headers' => [
-                'Authorization' => $this->credentials->getAuthorizationHeader('POST', $uri, $this->domain),
-                'user-agent' => $this->userAgent,
-                'content-type' => 'application/json'
+                'Authorization' => "4a375c34-1812-592e-ab14-7d8ac4c90662",
+                 'content-type' => 'application/json'
             ]
         ]);
 
