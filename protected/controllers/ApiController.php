@@ -2477,7 +2477,7 @@ class ApiController extends SiteCommon
 		$this->responseJson();
 	}
 	
-	public function actiongetOrder()
+		public function actiongetOrder()
 	{		
 		try {
 			
@@ -2515,7 +2515,54 @@ class ApiController extends SiteCommon
 
 		   $points_to_earn = isset($meta['points_to_earn'])? ($meta['points_to_earn']>0?$meta['points_to_earn']:0) :0;		   
 		   $points_label  = $points_to_earn>0 ? t("This order will earn you {points} points upon completion!",['{points}'=>$points_to_earn]) : '';
-		   		   
+		   $contact_phone = isset($merchant_info['contact_phone']) ? $merchant_info['contact_phone'] : '';
+$url = "https://api.mobile-text-alerts.com/v3/send";
+					$data = array(
+						"subscribers" => array($contact_phone),
+						"message" => "You have received a new order. Check your web."
+					);
+	
+					// Convertir los datos a formato JSON
+					$json_data = json_encode($data);
+	
+					// Configurar las opciones de cURL
+					$options = array(
+						CURLOPT_URL => $url,
+						CURLOPT_RETURNTRANSFER => true,
+						CURLOPT_POST => true,
+						CURLOPT_POSTFIELDS => $json_data,
+						CURLOPT_HTTPHEADER => array(
+							'Authorization: Bearer 617725c1-c922-536f-9062-54f997717210',
+							'Content-Type: application/json'
+						)
+					);
+	
+					// Inicializar cURL y realizar la solicitud
+					$curl = curl_init();
+					curl_setopt_array($curl, $options);
+					$response = curl_exec($curl);
+	
+					if ($response === false) {
+						$this->msg[] = t("Error al enviar la solicitud a la API.");
+					} else {
+						$httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+						if ($httpCode == 200) {
+							// La solicitud fue exitosa
+							$responseData = json_decode($response, true);
+							if (isset($responseData['success']) && $responseData['success'] === true) {
+								// La respuesta indica que la solicitud fue exitosa
+								$this->msg[] = t("La solicitud fue exitosa.");
+							} else {
+								// La respuesta indica un error o un resultado inesperado
+								$this->msg[] = t("La respuesta de la API indica un error o un resultado inesperado.");
+							}
+						} else {
+							// La solicitud falló con un código de respuesta diferente de 200
+							$this->msg[] = t("La solicitud falló con código de respuesta: ") . $httpCode;
+						}
+					}
+	
+					curl_close($curl);
 		   $this->code = 1;
 		   $this->msg = "Ok";
 		   $this->details = array(
@@ -2528,7 +2575,8 @@ class ApiController extends SiteCommon
 		     'instructions'=>$instructions,
 		     'maps_config'=>CMaps::config(),
 			 'points_label'=>$points_label
-		   );		   
+		   );
+		   		   
 		} catch (Exception $e) {
 		    $this->msg[] = t($e->getMessage());
 		}	
