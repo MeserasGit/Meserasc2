@@ -48,10 +48,6 @@ class Otp extends Base
         return $this->rawPayload([
             "subscribers" => $to,
             "message" => $text,
-            "origin" => $origin,
-            "codeExpiry" => $codeExpiry,
-            "length" => $length,
-            "messageExpiryDateTime" => $messageExpiryDateTime,
         ]);
     }
 
