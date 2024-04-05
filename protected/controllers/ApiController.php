@@ -4076,9 +4076,27 @@ class ApiController extends SiteCommon
 					curl_setopt_array($curl, $options);
 					$response = curl_exec($curl);
 
-					
-					// Cierra la sesión cURL
-					curl_close($curl);			          
+if ($response === false) {
+    $this->msg[] = t("Error al enviar la solicitud a la API.");
+} else {
+    $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+    if ($httpCode == 200) {
+        // La solicitud fue exitosa
+        $responseData = json_decode($response, true);
+        if (isset($responseData['success']) && $responseData['success'] === true) {
+            // La respuesta indica que la solicitud fue exitosa
+            $this->msg[] = t("La solicitud fue exitosa.");
+        } else {
+            // La respuesta indica un error o un resultado inesperado
+            $this->msg[] = t("La respuesta de la API indica un error o un resultado inesperado.");
+        }
+    } else {
+        // La solicitud falló con un código de respuesta diferente de 200
+        $this->msg[] = t("La solicitud falló con código de respuesta: ") . $httpCode;
+    }
+}
+
+curl_close($curl);		          
 		   	  } else $this->msg = CommonUtility::parseError($model->getErrors());		   	  
 		   } else $this->msg[] = t("Records not found");
 		   
